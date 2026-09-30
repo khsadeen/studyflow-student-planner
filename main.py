@@ -348,7 +348,10 @@ tk.Label(
 ).pack(side="left")
 
 search_var = tk.StringVar()
+filter_var = tk.StringVar(value="All Tasks")
 
+
+# Search
 search_entry = tk.Entry(
     top_bar,
     textvariable=search_var,
@@ -361,6 +364,38 @@ search_entry.pack(side="right", ipadx=8, ipady=6)
 tk.Label(
     top_bar,
     text="Search:",
+    font=("Arial", 10),
+    bg=WHITE,
+    fg=GRAY
+).pack(side="right", padx=(0, 8))
+
+
+# Filter
+filter_box = ttk.Combobox(
+    top_bar,
+    textvariable=filter_var,
+    values=[
+        "All Tasks",
+        "Pending",
+        "Completed",
+        "Overdue",
+        "High Priority",
+        "Medium Priority",
+        "Low Priority"
+    ],
+    state="readonly",
+    font=("Arial", 10),
+    width=16
+)
+filter_box.pack(
+    side="right",
+    padx=(0, 15),
+    ipady=4
+)
+
+tk.Label(
+    top_bar,
+    text="Filter:",
     font=("Arial", 10),
     bg=WHITE,
     fg=GRAY
@@ -441,6 +476,7 @@ def refresh_tasks(*args):
         tree.delete(item)
 
     search_text = search_var.get().lower()
+    selected_filter = filter_var.get()
 
     for index, task in enumerate(tasks):
 
@@ -450,9 +486,37 @@ def refresh_tasks(*args):
             task["priority"]
         ).lower()
 
+        # Search filter
         if search_text not in combined_text:
             continue
 
+        # Status filters
+        if selected_filter == "Pending":
+            if task["completed"] or is_overdue(task):
+                continue
+
+        elif selected_filter == "Completed":
+            if not task["completed"]:
+                continue
+
+        elif selected_filter == "Overdue":
+            if not is_overdue(task):
+                continue
+
+        # Priority filters
+        elif selected_filter == "High Priority":
+            if task["priority"] != "High":
+                continue
+
+        elif selected_filter == "Medium Priority":
+            if task["priority"] != "Medium":
+                continue
+
+        elif selected_filter == "Low Priority":
+            if task["priority"] != "Low":
+                continue
+
+        # Determine status
         if task["completed"]:
             status = "Completed"
         elif is_overdue(task):
@@ -493,6 +557,10 @@ def complete_task():
     save_tasks()
     refresh_tasks()
 
+
+# =========================
+# Edit Task
+# =========================
 
 def edit_task():
     selected = tree.selection()
@@ -536,7 +604,12 @@ def edit_task():
         relief="solid",
         bd=1
     )
-    edit_name.pack(fill="x", padx=35, pady=(5, 15), ipady=6)
+    edit_name.pack(
+        fill="x",
+        padx=35,
+        pady=(5, 15),
+        ipady=6
+    )
     edit_name.insert(0, task["name"])
 
     # Subject
@@ -554,7 +627,12 @@ def edit_task():
         relief="solid",
         bd=1
     )
-    edit_subject.pack(fill="x", padx=35, pady=(5, 15), ipady=6)
+    edit_subject.pack(
+        fill="x",
+        padx=35,
+        pady=(5, 15),
+        ipady=6
+    )
     edit_subject.insert(0, task["subject"])
 
     # Priority
@@ -566,7 +644,9 @@ def edit_task():
         fg=DARK
     ).pack(anchor="w", padx=35)
 
-    edit_priority = tk.StringVar(value=task["priority"])
+    edit_priority = tk.StringVar(
+        value=task["priority"]
+    )
 
     edit_priority_box = ttk.Combobox(
         edit_window,
@@ -597,7 +677,12 @@ def edit_task():
         relief="solid",
         bd=1
     )
-    edit_date.pack(fill="x", padx=35, pady=(5, 20), ipady=6)
+    edit_date.pack(
+        fill="x",
+        padx=35,
+        pady=(5, 20),
+        ipady=6
+    )
     edit_date.insert(0, task["due_date"])
 
     def save_edit():
@@ -622,7 +707,10 @@ def edit_task():
 
         if due_date:
             try:
-                datetime.strptime(due_date, "%Y-%m-%d")
+                datetime.strptime(
+                    due_date,
+                    "%Y-%m-%d"
+                )
             except ValueError:
                 messagebox.showerror(
                     "Invalid Date",
@@ -664,6 +752,10 @@ def edit_task():
     )
 
 
+# =========================
+# Delete Task
+# =========================
+
 def delete_task():
     selected = tree.selection()
 
@@ -695,7 +787,11 @@ buttons_frame = tk.Frame(
     right_panel,
     bg=WHITE
 )
-buttons_frame.pack(fill="x", padx=20, pady=15)
+buttons_frame.pack(
+    fill="x",
+    padx=20,
+    pady=15
+)
 
 edit_button = tk.Button(
     buttons_frame,
@@ -708,7 +804,12 @@ edit_button = tk.Button(
     cursor="hand2",
     command=edit_task
 )
-edit_button.pack(side="left", ipadx=10, ipady=7, padx=(0, 10))
+edit_button.pack(
+    side="left",
+    ipadx=10,
+    ipady=7,
+    padx=(0, 10)
+)
 
 complete_button = tk.Button(
     buttons_frame,
@@ -721,7 +822,11 @@ complete_button = tk.Button(
     cursor="hand2",
     command=complete_task
 )
-complete_button.pack(side="left", ipadx=10, ipady=7)
+complete_button.pack(
+    side="left",
+    ipadx=10,
+    ipady=7
+)
 
 delete_button = tk.Button(
     buttons_frame,
@@ -734,7 +839,11 @@ delete_button = tk.Button(
     cursor="hand2",
     command=delete_task
 )
-delete_button.pack(side="right", ipadx=15, ipady=7)
+delete_button.pack(
+    side="right",
+    ipadx=15,
+    ipady=7
+)
 
 
 # =========================
@@ -763,10 +872,15 @@ def update_statistics():
 
 
 # =========================
-# Search Event
+# Search and Filter Events
 # =========================
 
 search_var.trace_add(
+    "write",
+    refresh_tasks
+)
+
+filter_var.trace_add(
     "write",
     refresh_tasks
 )
