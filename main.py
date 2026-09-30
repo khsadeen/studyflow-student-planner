@@ -4,6 +4,8 @@ import json
 import os
 from datetime import datetime
 
+from gpa_calculator import calculate_gpa
+
 
 # =========================
 # Data Management
@@ -19,12 +21,18 @@ def load_tasks():
                 return json.load(file)
         except:
             return []
+
     return []
 
 
 def save_tasks():
     with open(DATA_FILE, "w", encoding="utf-8") as file:
-        json.dump(tasks, file, ensure_ascii=False, indent=4)
+        json.dump(
+            tasks,
+            file,
+            ensure_ascii=False,
+            indent=4
+        )
 
 
 tasks = load_tasks()
@@ -35,9 +43,10 @@ tasks = load_tasks()
 # =========================
 
 root = tk.Tk()
+
 root.title("StudyFlow - Student Planner")
-root.geometry("1050x680")
-root.minsize(900, 600)
+root.geometry("1100x720")
+root.minsize(950, 650)
 root.configure(bg="#F4F6FB")
 
 
@@ -61,9 +70,15 @@ LIGHT_GRAY = "#E5E7EB"
 # Header
 # =========================
 
-header = tk.Frame(root, bg=DARK, height=80)
+header = tk.Frame(
+    root,
+    bg=DARK,
+    height=80
+)
+
 header.pack(fill="x")
 header.pack_propagate(False)
+
 
 title = tk.Label(
     header,
@@ -72,7 +87,13 @@ title = tk.Label(
     bg=DARK,
     fg="white"
 )
-title.pack(side="left", padx=30, pady=18)
+
+title.pack(
+    side="left",
+    padx=30,
+    pady=18
+)
+
 
 subtitle = tk.Label(
     header,
@@ -81,25 +102,44 @@ subtitle = tk.Label(
     bg=DARK,
     fg="#B9C0CC"
 )
-subtitle.pack(side="left", pady=22)
+
+subtitle.pack(
+    side="left",
+    pady=22
+)
 
 
 # =========================
 # Statistics
 # =========================
 
-stats_frame = tk.Frame(root, bg=BG)
-stats_frame.pack(fill="x", padx=25, pady=20)
+stats_frame = tk.Frame(
+    root,
+    bg=BG
+)
+
+stats_frame.pack(
+    fill="x",
+    padx=25,
+    pady=20
+)
 
 
 def create_stat_card(parent, title_text, value, color):
+
     card = tk.Frame(
         parent,
         bg=WHITE,
         highlightbackground=LIGHT_GRAY,
         highlightthickness=1
     )
-    card.pack(side="left", expand=True, fill="both", padx=7)
+
+    card.pack(
+        side="left",
+        expand=True,
+        fill="both",
+        padx=7
+    )
 
     value_label = tk.Label(
         card,
@@ -108,7 +148,10 @@ def create_stat_card(parent, title_text, value, color):
         fg=color,
         bg=WHITE
     )
-    value_label.pack(pady=(15, 2))
+
+    value_label.pack(
+        pady=(15, 2)
+    )
 
     text_label = tk.Label(
         card,
@@ -117,25 +160,40 @@ def create_stat_card(parent, title_text, value, color):
         fg=GRAY,
         bg=WHITE
     )
-    text_label.pack(pady=(0, 15))
+
+    text_label.pack(
+        pady=(0, 15)
+    )
 
     return value_label
 
 
 total_value = create_stat_card(
-    stats_frame, "Total Tasks", "0", PRIMARY
+    stats_frame,
+    "Total Tasks",
+    "0",
+    PRIMARY
 )
 
 pending_value = create_stat_card(
-    stats_frame, "Pending", "0", ORANGE
+    stats_frame,
+    "Pending",
+    "0",
+    ORANGE
 )
 
 completed_value = create_stat_card(
-    stats_frame, "Completed", "0", GREEN
+    stats_frame,
+    "Completed",
+    "0",
+    GREEN
 )
 
 overdue_value = create_stat_card(
-    stats_frame, "Overdue", "0", RED
+    stats_frame,
+    "Overdue",
+    "0",
+    RED
 )
 
 
@@ -143,12 +201,21 @@ overdue_value = create_stat_card(
 # Content
 # =========================
 
-content = tk.Frame(root, bg=BG)
-content.pack(fill="both", expand=True, padx=25, pady=(0, 20))
+content = tk.Frame(
+    root,
+    bg=BG
+)
+
+content.pack(
+    fill="both",
+    expand=True,
+    padx=25,
+    pady=(0, 20)
+)
 
 
 # =========================
-# Left Panel - Add Task
+# Left Panel
 # =========================
 
 left_panel = tk.Frame(
@@ -158,8 +225,15 @@ left_panel = tk.Frame(
     highlightbackground=LIGHT_GRAY,
     highlightthickness=1
 )
-left_panel.pack(side="left", fill="y", padx=(0, 15))
+
+left_panel.pack(
+    side="left",
+    fill="y",
+    padx=(0, 15)
+)
+
 left_panel.pack_propagate(False)
+
 
 form_title = tk.Label(
     left_panel,
@@ -168,17 +242,29 @@ form_title = tk.Label(
     bg=WHITE,
     fg=DARK
 )
-form_title.pack(anchor="w", padx=20, pady=(20, 15))
+
+form_title.pack(
+    anchor="w",
+    padx=20,
+    pady=(20, 15)
+)
 
 
-# Task name
+# =========================
+# Task Name
+# =========================
+
 tk.Label(
     left_panel,
     text="Task name",
     font=("Arial", 10, "bold"),
     bg=WHITE,
     fg=DARK
-).pack(anchor="w", padx=20)
+).pack(
+    anchor="w",
+    padx=20
+)
+
 
 task_entry = tk.Entry(
     left_panel,
@@ -186,17 +272,30 @@ task_entry = tk.Entry(
     relief="solid",
     bd=1
 )
-task_entry.pack(fill="x", padx=20, pady=(5, 15), ipady=6)
+
+task_entry.pack(
+    fill="x",
+    padx=20,
+    pady=(5, 15),
+    ipady=6
+)
 
 
+# =========================
 # Subject
+# =========================
+
 tk.Label(
     left_panel,
     text="Subject",
     font=("Arial", 10, "bold"),
     bg=WHITE,
     fg=DARK
-).pack(anchor="w", padx=20)
+).pack(
+    anchor="w",
+    padx=20
+)
+
 
 subject_entry = tk.Entry(
     left_panel,
@@ -204,38 +303,71 @@ subject_entry = tk.Entry(
     relief="solid",
     bd=1
 )
-subject_entry.pack(fill="x", padx=20, pady=(5, 15), ipady=6)
+
+subject_entry.pack(
+    fill="x",
+    padx=20,
+    pady=(5, 15),
+    ipady=6
+)
 
 
+# =========================
 # Priority
+# =========================
+
 tk.Label(
     left_panel,
     text="Priority",
     font=("Arial", 10, "bold"),
     bg=WHITE,
     fg=DARK
-).pack(anchor="w", padx=20)
+).pack(
+    anchor="w",
+    padx=20
+)
 
-priority_var = tk.StringVar(value="Medium")
+
+priority_var = tk.StringVar(
+    value="Medium"
+)
+
 
 priority_box = ttk.Combobox(
     left_panel,
     textvariable=priority_var,
-    values=["Low", "Medium", "High"],
+    values=[
+        "Low",
+        "Medium",
+        "High"
+    ],
     state="readonly",
     font=("Arial", 10)
 )
-priority_box.pack(fill="x", padx=20, pady=(5, 15), ipady=4)
+
+priority_box.pack(
+    fill="x",
+    padx=20,
+    pady=(5, 15),
+    ipady=4
+)
 
 
-# Due date
+# =========================
+# Due Date
+# =========================
+
 tk.Label(
     left_panel,
     text="Due date (YYYY-MM-DD)",
     font=("Arial", 10, "bold"),
     bg=WHITE,
     fg=DARK
-).pack(anchor="w", padx=20)
+).pack(
+    anchor="w",
+    padx=20
+)
+
 
 date_entry = tk.Entry(
     left_panel,
@@ -243,14 +375,21 @@ date_entry = tk.Entry(
     relief="solid",
     bd=1
 )
-date_entry.pack(fill="x", padx=20, pady=(5, 20), ipady=6)
+
+date_entry.pack(
+    fill="x",
+    padx=20,
+    pady=(5, 20),
+    ipady=6
+)
 
 
 # =========================
-# Add Task Function
+# Add Task
 # =========================
 
 def add_task():
+
     name = task_entry.get().strip()
     subject = subject_entry.get().strip()
     priority = priority_var.get()
@@ -271,13 +410,20 @@ def add_task():
         return
 
     if due_date:
+
         try:
-            datetime.strptime(due_date, "%Y-%m-%d")
+            datetime.strptime(
+                due_date,
+                "%Y-%m-%d"
+            )
+
         except ValueError:
+
             messagebox.showerror(
                 "Invalid Date",
                 "Please use the format YYYY-MM-DD."
             )
+
             return
 
     new_task = {
@@ -289,12 +435,27 @@ def add_task():
     }
 
     tasks.append(new_task)
+
     save_tasks()
 
-    task_entry.delete(0, tk.END)
-    subject_entry.delete(0, tk.END)
-    date_entry.delete(0, tk.END)
-    priority_var.set("Medium")
+    task_entry.delete(
+        0,
+        tk.END
+    )
+
+    subject_entry.delete(
+        0,
+        tk.END
+    )
+
+    date_entry.delete(
+        0,
+        tk.END
+    )
+
+    priority_var.set(
+        "Medium"
+    )
 
     refresh_tasks()
 
@@ -316,7 +477,13 @@ add_button = tk.Button(
     cursor="hand2",
     command=add_task
 )
-add_button.pack(fill="x", padx=20, pady=10, ipady=9)
+
+add_button.pack(
+    fill="x",
+    padx=20,
+    pady=10,
+    ipady=9
+)
 
 
 # =========================
@@ -329,15 +496,29 @@ right_panel = tk.Frame(
     highlightbackground=LIGHT_GRAY,
     highlightthickness=1
 )
-right_panel.pack(side="right", fill="both", expand=True)
+
+right_panel.pack(
+    side="right",
+    fill="both",
+    expand=True
+)
 
 
 # =========================
 # Search / Filter
 # =========================
 
-top_bar = tk.Frame(right_panel, bg=WHITE)
-top_bar.pack(fill="x", padx=20, pady=20)
+top_bar = tk.Frame(
+    right_panel,
+    bg=WHITE
+)
+
+top_bar.pack(
+    fill="x",
+    padx=20,
+    pady=20
+)
+
 
 tk.Label(
     top_bar,
@@ -345,13 +526,22 @@ tk.Label(
     font=("Arial", 18, "bold"),
     bg=WHITE,
     fg=DARK
-).pack(side="left")
+).pack(
+    side="left"
+)
+
 
 search_var = tk.StringVar()
-filter_var = tk.StringVar(value="All Tasks")
+
+filter_var = tk.StringVar(
+    value="All Tasks"
+)
 
 
+# =========================
 # Search
+# =========================
+
 search_entry = tk.Entry(
     top_bar,
     textvariable=search_var,
@@ -359,7 +549,13 @@ search_entry = tk.Entry(
     relief="solid",
     bd=1
 )
-search_entry.pack(side="right", ipadx=8, ipady=6)
+
+search_entry.pack(
+    side="right",
+    ipadx=8,
+    ipady=6
+)
+
 
 tk.Label(
     top_bar,
@@ -367,10 +563,16 @@ tk.Label(
     font=("Arial", 10),
     bg=WHITE,
     fg=GRAY
-).pack(side="right", padx=(0, 8))
+).pack(
+    side="right",
+    padx=(0, 8)
+)
 
 
+# =========================
 # Filter
+# =========================
+
 filter_box = ttk.Combobox(
     top_bar,
     textvariable=filter_var,
@@ -387,11 +589,13 @@ filter_box = ttk.Combobox(
     font=("Arial", 10),
     width=16
 )
+
 filter_box.pack(
     side="right",
     padx=(0, 15),
     ipady=4
 )
+
 
 tk.Label(
     top_bar,
@@ -399,15 +603,28 @@ tk.Label(
     font=("Arial", 10),
     bg=WHITE,
     fg=GRAY
-).pack(side="right", padx=(0, 8))
+).pack(
+    side="right",
+    padx=(0, 8)
+)
 
 
 # =========================
-# Treeview
+# Task Table
 # =========================
 
-table_frame = tk.Frame(right_panel, bg=WHITE)
-table_frame.pack(fill="both", expand=True, padx=20, pady=(0, 10))
+table_frame = tk.Frame(
+    right_panel,
+    bg=WHITE
+)
+
+table_frame.pack(
+    fill="both",
+    expand=True,
+    padx=20,
+    pady=(0, 10)
+)
+
 
 columns = (
     "Task",
@@ -417,6 +634,7 @@ columns = (
     "Status"
 )
 
+
 tree = ttk.Treeview(
     table_frame,
     columns=columns,
@@ -424,17 +642,58 @@ tree = ttk.Treeview(
     selectmode="browse"
 )
 
-tree.heading("Task", text="Task")
-tree.heading("Subject", text="Subject")
-tree.heading("Priority", text="Priority")
-tree.heading("Due Date", text="Due Date")
-tree.heading("Status", text="Status")
 
-tree.column("Task", width=180)
-tree.column("Subject", width=120)
-tree.column("Priority", width=90)
-tree.column("Due Date", width=110)
-tree.column("Status", width=100)
+tree.heading(
+    "Task",
+    text="Task"
+)
+
+tree.heading(
+    "Subject",
+    text="Subject"
+)
+
+tree.heading(
+    "Priority",
+    text="Priority"
+)
+
+tree.heading(
+    "Due Date",
+    text="Due Date"
+)
+
+tree.heading(
+    "Status",
+    text="Status"
+)
+
+
+tree.column(
+    "Task",
+    width=180
+)
+
+tree.column(
+    "Subject",
+    width=120
+)
+
+tree.column(
+    "Priority",
+    width=90
+)
+
+tree.column(
+    "Due Date",
+    width=110
+)
+
+tree.column(
+    "Status",
+    width=100
+)
+
 
 scrollbar = ttk.Scrollbar(
     table_frame,
@@ -442,10 +701,23 @@ scrollbar = ttk.Scrollbar(
     command=tree.yview
 )
 
-tree.configure(yscrollcommand=scrollbar.set)
 
-tree.pack(side="left", fill="both", expand=True)
-scrollbar.pack(side="right", fill="y")
+tree.configure(
+    yscrollcommand=scrollbar.set
+)
+
+
+tree.pack(
+    side="left",
+    fill="both",
+    expand=True
+)
+
+
+scrollbar.pack(
+    side="right",
+    fill="y"
+)
 
 
 # =========================
@@ -453,6 +725,7 @@ scrollbar.pack(side="right", fill="y")
 # =========================
 
 def is_overdue(task):
+
     if task["completed"]:
         return False
 
@@ -460,6 +733,7 @@ def is_overdue(task):
         return False
 
     try:
+
         due = datetime.strptime(
             task["due_date"],
             "%Y-%m-%d"
@@ -468,10 +742,12 @@ def is_overdue(task):
         return due < datetime.now().date()
 
     except:
+
         return False
 
 
 def refresh_tasks(*args):
+
     for item in tree.get_children():
         tree.delete(item)
 
@@ -481,47 +757,59 @@ def refresh_tasks(*args):
     for index, task in enumerate(tasks):
 
         combined_text = (
-            task["name"] + " " +
-            task["subject"] + " " +
-            task["priority"]
+            task["name"]
+            + " "
+            + task["subject"]
+            + " "
+            + task["priority"]
         ).lower()
 
-        # Search filter
+        # Search
         if search_text not in combined_text:
             continue
 
-        # Status filters
+        # Filters
         if selected_filter == "Pending":
+
             if task["completed"] or is_overdue(task):
                 continue
 
         elif selected_filter == "Completed":
+
             if not task["completed"]:
                 continue
 
         elif selected_filter == "Overdue":
+
             if not is_overdue(task):
                 continue
 
-        # Priority filters
         elif selected_filter == "High Priority":
+
             if task["priority"] != "High":
                 continue
 
         elif selected_filter == "Medium Priority":
+
             if task["priority"] != "Medium":
                 continue
 
         elif selected_filter == "Low Priority":
+
             if task["priority"] != "Low":
                 continue
 
-        # Determine status
+        # Status
         if task["completed"]:
+
             status = "Completed"
+
         elif is_overdue(task):
+
             status = "Overdue"
+
         else:
+
             status = "Pending"
 
         tree.insert(
@@ -540,14 +828,21 @@ def refresh_tasks(*args):
     update_statistics()
 
 
+# =========================
+# Complete Task
+# =========================
+
 def complete_task():
+
     selected = tree.selection()
 
     if not selected:
+
         messagebox.showwarning(
             "No Selection",
             "Please select a task first."
         )
+
         return
 
     index = int(selected[0])
@@ -555,6 +850,7 @@ def complete_task():
     tasks[index]["completed"] = True
 
     save_tasks()
+
     refresh_tasks()
 
 
@@ -563,23 +859,42 @@ def complete_task():
 # =========================
 
 def edit_task():
+
     selected = tree.selection()
 
     if not selected:
+
         messagebox.showwarning(
             "No Selection",
             "Please select a task first."
         )
+
         return
 
     index = int(selected[0])
+
     task = tasks[index]
 
+
     edit_window = tk.Toplevel(root)
-    edit_window.title("Edit Task")
-    edit_window.geometry("400x430")
-    edit_window.resizable(False, False)
-    edit_window.configure(bg=WHITE)
+
+    edit_window.title(
+        "Edit Task"
+    )
+
+    edit_window.geometry(
+        "400x430"
+    )
+
+    edit_window.resizable(
+        False,
+        False
+    )
+
+    edit_window.configure(
+        bg=WHITE
+    )
+
 
     tk.Label(
         edit_window,
@@ -587,16 +902,24 @@ def edit_task():
         font=("Arial", 20, "bold"),
         bg=WHITE,
         fg=DARK
-    ).pack(pady=(25, 20))
+    ).pack(
+        pady=(25, 20)
+    )
 
-    # Task name
+
+    # Task Name
+
     tk.Label(
         edit_window,
         text="Task name",
         font=("Arial", 10, "bold"),
         bg=WHITE,
         fg=DARK
-    ).pack(anchor="w", padx=35)
+    ).pack(
+        anchor="w",
+        padx=35
+    )
+
 
     edit_name = tk.Entry(
         edit_window,
@@ -604,22 +927,33 @@ def edit_task():
         relief="solid",
         bd=1
     )
+
     edit_name.pack(
         fill="x",
         padx=35,
         pady=(5, 15),
         ipady=6
     )
-    edit_name.insert(0, task["name"])
+
+    edit_name.insert(
+        0,
+        task["name"]
+    )
+
 
     # Subject
+
     tk.Label(
         edit_window,
         text="Subject",
         font=("Arial", 10, "bold"),
         bg=WHITE,
         fg=DARK
-    ).pack(anchor="w", padx=35)
+    ).pack(
+        anchor="w",
+        padx=35
+    )
+
 
     edit_subject = tk.Entry(
         edit_window,
@@ -627,34 +961,51 @@ def edit_task():
         relief="solid",
         bd=1
     )
+
     edit_subject.pack(
         fill="x",
         padx=35,
         pady=(5, 15),
         ipady=6
     )
-    edit_subject.insert(0, task["subject"])
+
+    edit_subject.insert(
+        0,
+        task["subject"]
+    )
+
 
     # Priority
+
     tk.Label(
         edit_window,
         text="Priority",
         font=("Arial", 10, "bold"),
         bg=WHITE,
         fg=DARK
-    ).pack(anchor="w", padx=35)
+    ).pack(
+        anchor="w",
+        padx=35
+    )
+
 
     edit_priority = tk.StringVar(
         value=task["priority"]
     )
 
+
     edit_priority_box = ttk.Combobox(
         edit_window,
         textvariable=edit_priority,
-        values=["Low", "Medium", "High"],
+        values=[
+            "Low",
+            "Medium",
+            "High"
+        ],
         state="readonly",
         font=("Arial", 10)
     )
+
     edit_priority_box.pack(
         fill="x",
         padx=35,
@@ -662,14 +1013,20 @@ def edit_task():
         ipady=4
     )
 
-    # Due date
+
+    # Due Date
+
     tk.Label(
         edit_window,
         text="Due date (YYYY-MM-DD)",
         font=("Arial", 10, "bold"),
         bg=WHITE,
         fg=DARK
-    ).pack(anchor="w", padx=35)
+    ).pack(
+        anchor="w",
+        padx=35
+    )
+
 
     edit_date = tk.Entry(
         edit_window,
@@ -677,46 +1034,68 @@ def edit_task():
         relief="solid",
         bd=1
     )
+
     edit_date.pack(
         fill="x",
         padx=35,
         pady=(5, 20),
         ipady=6
     )
-    edit_date.insert(0, task["due_date"])
+
+    edit_date.insert(
+        0,
+        task["due_date"]
+    )
+
+
+    # Save Edit
 
     def save_edit():
+
         name = edit_name.get().strip()
         subject = edit_subject.get().strip()
         priority = edit_priority.get()
         due_date = edit_date.get().strip()
 
+
         if not name:
+
             messagebox.showwarning(
                 "Missing Information",
                 "Please enter a task name."
             )
+
             return
 
+
         if not subject:
+
             messagebox.showwarning(
                 "Missing Information",
                 "Please enter a subject."
             )
+
             return
 
+
         if due_date:
+
             try:
+
                 datetime.strptime(
                     due_date,
                     "%Y-%m-%d"
                 )
+
             except ValueError:
+
                 messagebox.showerror(
                     "Invalid Date",
                     "Please use the format YYYY-MM-DD."
                 )
+
                 return
+
 
         tasks[index]["name"] = name
         tasks[index]["subject"] = subject
@@ -724,13 +1103,16 @@ def edit_task():
         tasks[index]["due_date"] = due_date
 
         save_tasks()
+
         refresh_tasks()
+
         edit_window.destroy()
 
         messagebox.showinfo(
             "Task Updated",
             "The task was updated successfully!"
         )
+
 
     save_button = tk.Button(
         edit_window,
@@ -744,6 +1126,7 @@ def edit_task():
         cursor="hand2",
         command=save_edit
     )
+
     save_button.pack(
         fill="x",
         padx=35,
@@ -757,26 +1140,362 @@ def edit_task():
 # =========================
 
 def delete_task():
+
     selected = tree.selection()
 
     if not selected:
+
         messagebox.showwarning(
             "No Selection",
             "Please select a task first."
         )
+
         return
 
+
     index = int(selected[0])
+
 
     answer = messagebox.askyesno(
         "Delete Task",
         "Are you sure you want to delete this task?"
     )
 
+
     if answer:
+
         tasks.pop(index)
+
         save_tasks()
+
         refresh_tasks()
+
+
+# =========================
+# GPA Calculator Window
+# =========================
+
+def open_gpa_calculator():
+
+    gpa_window = tk.Toplevel(root)
+
+    gpa_window.title(
+        "GPA Calculator"
+    )
+
+    gpa_window.geometry(
+        "680x600"
+    )
+
+    gpa_window.resizable(
+        False,
+        False
+    )
+
+    gpa_window.configure(
+        bg=BG
+    )
+
+
+    # =========================
+    # GPA Header
+    # =========================
+
+    tk.Label(
+        gpa_window,
+        text="GPA Calculator",
+        font=("Arial", 22, "bold"),
+        bg=BG,
+        fg=DARK
+    ).pack(
+        pady=(25, 5)
+    )
+
+
+    tk.Label(
+        gpa_window,
+        text="Enter your grades and credits",
+        font=("Arial", 11),
+        bg=BG,
+        fg=GRAY
+    ).pack(
+        pady=(0, 20)
+    )
+
+
+    # =========================
+    # GPA Table
+    # =========================
+
+    table = tk.Frame(
+        gpa_window,
+        bg=BG
+    )
+
+    table.pack(
+        padx=30,
+        fill="x"
+    )
+
+
+    tk.Label(
+        table,
+        text="Subject",
+        font=("Arial", 10, "bold"),
+        bg=BG,
+        fg=DARK
+    ).grid(
+        row=0,
+        column=0,
+        padx=5,
+        pady=5
+    )
+
+
+    tk.Label(
+        table,
+        text="Grade",
+        font=("Arial", 10, "bold"),
+        bg=BG,
+        fg=DARK
+    ).grid(
+        row=0,
+        column=1,
+        padx=5,
+        pady=5
+    )
+
+
+    tk.Label(
+        table,
+        text="Credits",
+        font=("Arial", 10, "bold"),
+        bg=BG,
+        fg=DARK
+    ).grid(
+        row=0,
+        column=2,
+        padx=5,
+        pady=5
+    )
+
+
+    subject_entries = []
+    grade_entries = []
+    credit_entries = []
+
+
+    for row in range(1, 7):
+
+        subject_entry_gpa = tk.Entry(
+            table,
+            width=28,
+            font=("Arial", 10),
+            relief="solid",
+            bd=1
+        )
+
+        subject_entry_gpa.grid(
+            row=row,
+            column=0,
+            padx=5,
+            pady=6
+        )
+
+
+        grade_entry_gpa = tk.Entry(
+            table,
+            width=12,
+            font=("Arial", 10),
+            relief="solid",
+            bd=1
+        )
+
+        grade_entry_gpa.grid(
+            row=row,
+            column=1,
+            padx=5,
+            pady=6
+        )
+
+
+        credit_entry_gpa = tk.Entry(
+            table,
+            width=12,
+            font=("Arial", 10),
+            relief="solid",
+            bd=1
+        )
+
+        credit_entry_gpa.grid(
+            row=row,
+            column=2,
+            padx=5,
+            pady=6
+        )
+
+
+        subject_entries.append(
+            subject_entry_gpa
+        )
+
+        grade_entries.append(
+            grade_entry_gpa
+        )
+
+        credit_entries.append(
+            credit_entry_gpa
+        )
+
+
+    # =========================
+    # Result
+    # =========================
+
+    result_frame = tk.Frame(
+        gpa_window,
+        bg=WHITE,
+        highlightbackground=LIGHT_GRAY,
+        highlightthickness=1
+    )
+
+    result_frame.pack(
+        fill="x",
+        padx=30,
+        pady=25
+    )
+
+
+    result_label = tk.Label(
+        result_frame,
+        text="GPA: --",
+        font=("Arial", 24, "bold"),
+        bg=WHITE,
+        fg=PRIMARY
+    )
+
+    result_label.pack(
+        pady=20
+    )
+
+
+    # =========================
+    # Calculate GPA
+    # =========================
+
+    def calculate_gpa_from_form():
+
+        courses = []
+
+
+        for i in range(6):
+
+            subject = subject_entries[i].get().strip()
+            grade_text = grade_entries[i].get().strip()
+            credit_text = credit_entries[i].get().strip()
+
+
+            # Empty row
+            if not subject and not grade_text and not credit_text:
+                continue
+
+
+            if not grade_text or not credit_text:
+
+                messagebox.showwarning(
+                    "Missing Information",
+                    "Please enter both grade and credits for every course."
+                )
+
+                return
+
+
+            try:
+
+                grade = float(
+                    grade_text
+                )
+
+                credits = float(
+                    credit_text
+                )
+
+            except ValueError:
+
+                messagebox.showerror(
+                    "Invalid Input",
+                    "Grade and credits must be numbers."
+                )
+
+                return
+
+
+            if grade < 0 or grade > 100:
+
+                messagebox.showerror(
+                    "Invalid Grade",
+                    "Grade must be between 0 and 100."
+                )
+
+                return
+
+
+            if credits <= 0:
+
+                messagebox.showerror(
+                    "Invalid Credits",
+                    "Credits must be greater than 0."
+                )
+
+                return
+
+
+            courses.append(
+                {
+                    "grade": grade,
+                    "credits": credits
+                }
+            )
+
+
+        if not courses:
+
+            messagebox.showwarning(
+                "No Courses",
+                "Please enter at least one course."
+            )
+
+            return
+
+
+        gpa = calculate_gpa(
+            courses
+        )
+
+
+        result_label.config(
+            text=f"GPA: {gpa:.2f}"
+        )
+
+
+    calculate_button = tk.Button(
+        gpa_window,
+        text="Calculate GPA",
+        font=("Arial", 11, "bold"),
+        bg=PRIMARY,
+        fg="white",
+        activebackground=PRIMARY_DARK,
+        activeforeground="white",
+        relief="flat",
+        cursor="hand2",
+        command=calculate_gpa_from_form
+    )
+
+    calculate_button.pack(
+        fill="x",
+        padx=30,
+        ipady=10
+    )
 
 
 # =========================
@@ -787,12 +1506,15 @@ buttons_frame = tk.Frame(
     right_panel,
     bg=WHITE
 )
+
 buttons_frame.pack(
     fill="x",
     padx=20,
     pady=15
 )
 
+
+# Edit
 edit_button = tk.Button(
     buttons_frame,
     text="✏ Edit Task",
@@ -804,6 +1526,7 @@ edit_button = tk.Button(
     cursor="hand2",
     command=edit_task
 )
+
 edit_button.pack(
     side="left",
     ipadx=10,
@@ -811,6 +1534,8 @@ edit_button.pack(
     padx=(0, 10)
 )
 
+
+# Complete
 complete_button = tk.Button(
     buttons_frame,
     text="✓ Mark as Completed",
@@ -822,12 +1547,15 @@ complete_button = tk.Button(
     cursor="hand2",
     command=complete_task
 )
+
 complete_button.pack(
     side="left",
     ipadx=10,
     ipady=7
 )
 
+
+# Delete
 delete_button = tk.Button(
     buttons_frame,
     text="Delete",
@@ -839,10 +1567,32 @@ delete_button = tk.Button(
     cursor="hand2",
     command=delete_task
 )
+
 delete_button.pack(
     side="right",
     ipadx=15,
     ipady=7
+)
+
+
+# GPA
+gpa_button = tk.Button(
+    buttons_frame,
+    text="📊 GPA Calculator",
+    font=("Arial", 10, "bold"),
+    bg=ORANGE,
+    fg="white",
+    activebackground="#D68910",
+    relief="flat",
+    cursor="hand2",
+    command=open_gpa_calculator
+)
+
+gpa_button.pack(
+    side="right",
+    ipadx=10,
+    ipady=7,
+    padx=(0, 10)
 )
 
 
@@ -851,34 +1601,50 @@ delete_button.pack(
 # =========================
 
 def update_statistics():
+
     total = len(tasks)
 
     completed = sum(
-        1 for task in tasks
+        1
+        for task in tasks
         if task["completed"]
     )
 
     overdue = sum(
-        1 for task in tasks
+        1
+        for task in tasks
         if is_overdue(task)
     )
 
     pending = total - completed - overdue
 
-    total_value.config(text=str(total))
-    pending_value.config(text=str(max(pending, 0)))
-    completed_value.config(text=str(completed))
-    overdue_value.config(text=str(overdue))
+
+    total_value.config(
+        text=str(total)
+    )
+
+    pending_value.config(
+        text=str(max(pending, 0))
+    )
+
+    completed_value.config(
+        text=str(completed)
+    )
+
+    overdue_value.config(
+        text=str(overdue)
+    )
 
 
 # =========================
-# Search and Filter Events
+# Search / Filter Events
 # =========================
 
 search_var.trace_add(
     "write",
     refresh_tasks
 )
+
 
 filter_var.trace_add(
     "write",
@@ -887,7 +1653,7 @@ filter_var.trace_add(
 
 
 # =========================
-# Keyboard Shortcuts
+# Keyboard Shortcut
 # =========================
 
 root.bind(
