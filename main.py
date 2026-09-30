@@ -494,6 +494,176 @@ def complete_task():
     refresh_tasks()
 
 
+def edit_task():
+    selected = tree.selection()
+
+    if not selected:
+        messagebox.showwarning(
+            "No Selection",
+            "Please select a task first."
+        )
+        return
+
+    index = int(selected[0])
+    task = tasks[index]
+
+    edit_window = tk.Toplevel(root)
+    edit_window.title("Edit Task")
+    edit_window.geometry("400x430")
+    edit_window.resizable(False, False)
+    edit_window.configure(bg=WHITE)
+
+    tk.Label(
+        edit_window,
+        text="Edit Task",
+        font=("Arial", 20, "bold"),
+        bg=WHITE,
+        fg=DARK
+    ).pack(pady=(25, 20))
+
+    # Task name
+    tk.Label(
+        edit_window,
+        text="Task name",
+        font=("Arial", 10, "bold"),
+        bg=WHITE,
+        fg=DARK
+    ).pack(anchor="w", padx=35)
+
+    edit_name = tk.Entry(
+        edit_window,
+        font=("Arial", 11),
+        relief="solid",
+        bd=1
+    )
+    edit_name.pack(fill="x", padx=35, pady=(5, 15), ipady=6)
+    edit_name.insert(0, task["name"])
+
+    # Subject
+    tk.Label(
+        edit_window,
+        text="Subject",
+        font=("Arial", 10, "bold"),
+        bg=WHITE,
+        fg=DARK
+    ).pack(anchor="w", padx=35)
+
+    edit_subject = tk.Entry(
+        edit_window,
+        font=("Arial", 11),
+        relief="solid",
+        bd=1
+    )
+    edit_subject.pack(fill="x", padx=35, pady=(5, 15), ipady=6)
+    edit_subject.insert(0, task["subject"])
+
+    # Priority
+    tk.Label(
+        edit_window,
+        text="Priority",
+        font=("Arial", 10, "bold"),
+        bg=WHITE,
+        fg=DARK
+    ).pack(anchor="w", padx=35)
+
+    edit_priority = tk.StringVar(value=task["priority"])
+
+    edit_priority_box = ttk.Combobox(
+        edit_window,
+        textvariable=edit_priority,
+        values=["Low", "Medium", "High"],
+        state="readonly",
+        font=("Arial", 10)
+    )
+    edit_priority_box.pack(
+        fill="x",
+        padx=35,
+        pady=(5, 15),
+        ipady=4
+    )
+
+    # Due date
+    tk.Label(
+        edit_window,
+        text="Due date (YYYY-MM-DD)",
+        font=("Arial", 10, "bold"),
+        bg=WHITE,
+        fg=DARK
+    ).pack(anchor="w", padx=35)
+
+    edit_date = tk.Entry(
+        edit_window,
+        font=("Arial", 11),
+        relief="solid",
+        bd=1
+    )
+    edit_date.pack(fill="x", padx=35, pady=(5, 20), ipady=6)
+    edit_date.insert(0, task["due_date"])
+
+    def save_edit():
+        name = edit_name.get().strip()
+        subject = edit_subject.get().strip()
+        priority = edit_priority.get()
+        due_date = edit_date.get().strip()
+
+        if not name:
+            messagebox.showwarning(
+                "Missing Information",
+                "Please enter a task name."
+            )
+            return
+
+        if not subject:
+            messagebox.showwarning(
+                "Missing Information",
+                "Please enter a subject."
+            )
+            return
+
+        if due_date:
+            try:
+                datetime.strptime(due_date, "%Y-%m-%d")
+            except ValueError:
+                messagebox.showerror(
+                    "Invalid Date",
+                    "Please use the format YYYY-MM-DD."
+                )
+                return
+
+        tasks[index]["name"] = name
+        tasks[index]["subject"] = subject
+        tasks[index]["priority"] = priority
+        tasks[index]["due_date"] = due_date
+
+        save_tasks()
+        refresh_tasks()
+        edit_window.destroy()
+
+        messagebox.showinfo(
+            "Task Updated",
+            "The task was updated successfully!"
+        )
+
+    save_button = tk.Button(
+        edit_window,
+        text="Save Changes",
+        font=("Arial", 11, "bold"),
+        bg=PRIMARY,
+        fg="white",
+        activebackground=PRIMARY_DARK,
+        activeforeground="white",
+        relief="flat",
+        cursor="hand2",
+        command=save_edit
+    )
+    save_button.pack(
+        fill="x",
+        padx=35,
+        pady=10,
+        ipady=9
+    )
+
+
 def delete_task():
     selected = tree.selection()
 
@@ -526,6 +696,19 @@ buttons_frame = tk.Frame(
     bg=WHITE
 )
 buttons_frame.pack(fill="x", padx=20, pady=15)
+
+edit_button = tk.Button(
+    buttons_frame,
+    text="✏ Edit Task",
+    font=("Arial", 10, "bold"),
+    bg=PRIMARY,
+    fg="white",
+    activebackground=PRIMARY_DARK,
+    relief="flat",
+    cursor="hand2",
+    command=edit_task
+)
+edit_button.pack(side="left", ipadx=10, ipady=7, padx=(0, 10))
 
 complete_button = tk.Button(
     buttons_frame,
