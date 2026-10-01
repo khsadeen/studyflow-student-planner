@@ -1,12 +1,5 @@
 [
     {
-        "title": "Python",
-        "type": "Exam",
-        "date": "2026-10-29",
-        "time": "8:30",
-        "notes": ""
-    },
-    {
         "title": "C++",
         "type": "Project",
         "date": "2026-12-20",

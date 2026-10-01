@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from gpa_calculator import calculate_gpa
+from calendar_ui import CalendarApp
+from calendar_manager import load_events, sort_events
 from task_manager import (
     get_task_status,
     validate_task,
@@ -75,6 +77,7 @@ class StudyFlowApp:
         self.build_header()
 
         self.build_statistics()
+        self.build_upcoming_section()
 
         content = tk.Frame(
             self.root,
@@ -237,6 +240,173 @@ class StudyFlowApp:
 
 
         return value_label
+
+
+    # =====================================================
+    # Upcoming Dashboard
+    # =====================================================
+
+    def build_upcoming_section(self):
+
+        self.upcoming_frame = tk.Frame(
+            self.root,
+            bg=BG
+        )
+
+        self.upcoming_frame.pack(
+            fill="x",
+            padx=25,
+            pady=(0, 15)
+        )
+
+        tasks_card = tk.Frame(
+            self.upcoming_frame,
+            bg=WHITE,
+            highlightbackground=LIGHT_GRAY,
+            highlightthickness=1
+        )
+
+        tasks_card.pack(
+            side="left",
+            fill="both",
+            expand=True,
+            padx=(0, 7)
+        )
+
+        tasks_header = tk.Frame(tasks_card, bg=WHITE)
+        tasks_header.pack(fill="x", padx=15, pady=(10, 4))
+
+        tk.Label(
+            tasks_header,
+            text="📌 Upcoming Tasks",
+            font=("Arial", 11, "bold"),
+            bg=WHITE,
+            fg=DARK
+        ).pack(side="left")
+
+        events_card = tk.Frame(
+            self.upcoming_frame,
+            bg=WHITE,
+            highlightbackground=LIGHT_GRAY,
+            highlightthickness=1
+        )
+
+        events_card.pack(
+            side="right",
+            fill="both",
+            expand=True,
+            padx=(7, 0)
+        )
+
+        events_header = tk.Frame(events_card, bg=WHITE)
+        events_header.pack(fill="x", padx=15, pady=(10, 4))
+
+        tk.Label(
+            events_header,
+            text="📅 Upcoming Events",
+            font=("Arial", 11, "bold"),
+            bg=WHITE,
+            fg=DARK
+        ).pack(side="left")
+
+        self.upcoming_tasks_label = tk.Label(
+            tasks_card,
+            text="No upcoming tasks",
+            font=("Arial", 9),
+            bg=WHITE,
+            fg=GRAY,
+            anchor="w",
+            justify="left"
+        )
+
+        self.upcoming_tasks_label.pack(
+            fill="x",
+            padx=15,
+            pady=(0, 10)
+        )
+
+        self.upcoming_events_label = tk.Label(
+            events_card,
+            text="No upcoming events",
+            font=("Arial", 9),
+            bg=WHITE,
+            fg=GRAY,
+            anchor="w",
+            justify="left"
+        )
+
+        self.upcoming_events_label.pack(
+            fill="x",
+            padx=15,
+            pady=(0, 10)
+        )
+
+        self.refresh_upcoming()
+
+    def refresh_upcoming(self):
+
+        upcoming_tasks = []
+
+        for task in self.tasks:
+            if task.get("completed", False):
+                continue
+
+            due_date = task.get("due_date", "").strip()
+
+            if due_date:
+                upcoming_tasks.append(task)
+
+        upcoming_tasks.sort(
+            key=lambda task: task.get("due_date", "9999-12-31")
+        )
+
+        task_lines = []
+
+        for task in upcoming_tasks[:3]:
+            name = task.get("name", "Unnamed task")
+            due_date = task.get("due_date", "")
+            priority = task.get("priority", "Medium")
+
+            task_lines.append(
+                f"• {name}  |  {due_date}  |  {priority}"
+            )
+
+        if task_lines:
+            self.upcoming_tasks_label.config(
+                text="\n".join(task_lines),
+                fg=DARK
+            )
+        else:
+            self.upcoming_tasks_label.config(
+                text="No upcoming tasks",
+                fg=GRAY
+            )
+
+        events = sort_events(load_events())
+        event_lines = []
+
+        for event in events[:3]:
+            title = event.get("title", "Untitled event")
+            event_type = event.get("type", "Other")
+            date = event.get("date", "")
+            time = event.get("time", "")
+
+            time_text = f" {time}" if time else ""
+
+            event_lines.append(
+                f"• {title}  |  {date}{time_text}  |  {event_type}"
+            )
+
+        if event_lines:
+            self.upcoming_events_label.config(
+                text="\n".join(event_lines),
+                fg=DARK
+            )
+        else:
+            self.upcoming_events_label.config(
+                text="No upcoming events",
+                fg=GRAY
+            )
 
 
     # =====================================================
@@ -704,6 +874,24 @@ class StudyFlowApp:
 
         tk.Button(
             buttons_frame,
+            text="📅 Calendar",
+            font=("Arial", 10, "bold"),
+            bg=PRIMARY,
+            fg="white",
+            activebackground=PRIMARY_DARK,
+            relief="flat",
+            cursor="hand2",
+            command=self.open_calendar
+        ).pack(
+            side="right",
+            ipadx=10,
+            ipady=7,
+            padx=(0, 10)
+        )
+
+
+        tk.Button(
+            buttons_frame,
             text="📊 GPA Calculator",
             font=("Arial", 10, "bold"),
             bg=ORANGE,
@@ -781,6 +969,7 @@ class StudyFlowApp:
 
 
         self.update_statistics()
+        self.refresh_upcoming()
 
 
     # =====================================================
@@ -1252,6 +1441,17 @@ class StudyFlowApp:
             pady=10,
             ipady=9
         )
+
+
+    # =====================================================
+    # Calendar
+    # =====================================================
+
+    def open_calendar(self):
+
+        calendar_window = tk.Toplevel(self.root)
+
+        CalendarApp(calendar_window)
 
 
     # =====================================================
