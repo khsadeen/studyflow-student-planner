@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from gpa_calculator import calculate_gpa
 from calendar_ui import CalendarApp
 from calendar_manager import load_events, sort_events
+from notification_manager import get_all_alerts
 from task_manager import (
     get_task_status,
     validate_task,
@@ -78,6 +79,7 @@ class StudyFlowApp:
         self.build_header()
 
         self.build_statistics()
+        self.build_alerts_section()
         self.build_upcoming_section()
 
         content = tk.Frame(
@@ -241,6 +243,81 @@ class StudyFlowApp:
 
 
         return value_label
+
+
+    # =====================================================
+    # Alerts
+    # =====================================================
+
+    def build_alerts_section(self):
+
+        self.alerts_frame = tk.Frame(
+            self.root,
+            bg=WHITE,
+            highlightbackground=LIGHT_GRAY,
+            highlightthickness=1
+        )
+
+        self.alerts_frame.pack(
+            fill="x",
+            padx=25,
+            pady=(0, 15)
+        )
+
+        self.alerts_label = tk.Label(
+            self.alerts_frame,
+            text="🔔 No urgent deadlines today or tomorrow.",
+            font=("Arial", 10, "bold"),
+            bg=WHITE,
+            fg=GRAY,
+            anchor="w",
+            justify="left"
+        )
+
+        self.alerts_label.pack(
+            fill="x",
+            padx=15,
+            pady=10
+        )
+
+        self.refresh_alerts()
+
+    def refresh_alerts(self):
+
+        events = load_events()
+        alerts = get_all_alerts(
+            self.tasks,
+            events
+        )
+
+        if not alerts:
+            self.alerts_label.config(
+                text="🔔 No urgent deadlines today or tomorrow.",
+                fg=GRAY
+            )
+            return
+
+        lines = ["🔔 Alerts"]
+
+        for alert in alerts[:4]:
+            if alert["kind"] == "Task":
+                lines.append(
+                    f"• Task: {alert['title']} — due {alert['status'].lower()}"
+                )
+            else:
+                lines.append(
+                    f"• Event: {alert['title']} — {alert['status'].lower()}"
+                )
+
+        if len(alerts) > 4:
+            lines.append(
+                f"• +{len(alerts) - 4} more alert(s)"
+            )
+
+        self.alerts_label.config(
+            text="\n".join(lines),
+            fg=RED
+        )
 
 
     # =====================================================
@@ -1022,6 +1099,7 @@ class StudyFlowApp:
 
 
         self.update_statistics()
+        self.refresh_alerts()
         self.refresh_upcoming()
 
 
