@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from datetime import datetime, timedelta
 
 from gpa_calculator import calculate_gpa
 from calendar_ui import CalendarApp
@@ -345,6 +346,29 @@ class StudyFlowApp:
 
     def refresh_upcoming(self):
 
+        today = datetime.today().date()
+        tomorrow = today + timedelta(days=1)
+        week_end = today + timedelta(days=7)
+
+        def get_date_label(date_text):
+            try:
+                event_date = datetime.strptime(
+                    date_text,
+                    "%Y-%m-%d"
+                ).date()
+            except ValueError:
+                return date_text
+
+            if event_date == today:
+                return "Today"
+            if event_date == tomorrow:
+                return "Tomorrow"
+            if today < event_date <= week_end:
+                return "This Week"
+
+            return date_text
+
+        # Upcoming tasks: today and future only.
         upcoming_tasks = []
 
         for task in self.tasks:
@@ -353,7 +377,18 @@ class StudyFlowApp:
 
             due_date = task.get("due_date", "").strip()
 
-            if due_date:
+            if not due_date:
+                continue
+
+            try:
+                task_date = datetime.strptime(
+                    due_date,
+                    "%Y-%m-%d"
+                ).date()
+            except ValueError:
+                continue
+
+            if task_date >= today:
                 upcoming_tasks.append(task)
 
         upcoming_tasks.sort(
@@ -368,7 +403,7 @@ class StudyFlowApp:
             priority = task.get("priority", "Medium")
 
             task_lines.append(
-                f"• {name}  |  {due_date}  |  {priority}"
+                f"• {name}  |  {get_date_label(due_date)}  |  {priority}"
             )
 
         if task_lines:
@@ -382,19 +417,36 @@ class StudyFlowApp:
                 fg=GRAY
             )
 
-        events = sort_events(load_events())
+        # Upcoming calendar events: today and future only.
+        all_events = sort_events(load_events())
+        upcoming_events = []
+
+        for event in all_events:
+            date_text = event.get("date", "").strip()
+
+            try:
+                event_date = datetime.strptime(
+                    date_text,
+                    "%Y-%m-%d"
+                ).date()
+            except ValueError:
+                continue
+
+            if event_date >= today:
+                upcoming_events.append(event)
+
         event_lines = []
 
-        for event in events[:3]:
+        for event in upcoming_events[:3]:
             title = event.get("title", "Untitled event")
             event_type = event.get("type", "Other")
             date = event.get("date", "")
             time = event.get("time", "")
 
-            time_text = f" {time}" if time else ""
+            time_text = f" at {time}" if time else ""
 
             event_lines.append(
-                f"• {title}  |  {date}{time_text}  |  {event_type}"
+                f"• {title}  |  {get_date_label(date)}{time_text}  |  {event_type}"
             )
 
         if event_lines:
@@ -407,6 +459,7 @@ class StudyFlowApp:
                 text="No upcoming events",
                 fg=GRAY
             )
+
 
 
     # =====================================================
